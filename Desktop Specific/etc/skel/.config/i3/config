@@ -223,7 +223,7 @@ exec --no-startup-id numlockx on
 exec --no-startup-id pa-applet
 exec --no-startup-id pulseaudio
 exec --no-startup-id xfce4-power-manager
-exec xrandr --output DVI-D-0 --primary --mode 1920x1080 --pos 1080x555 --rotate normal --output DP-2 --mode 1920x1080 --pos 0x0 --rotate left
+exec xrandr --output DVI-D-0 --primary --mode 1920x1080 --pos 1080x225 --rotate normal --output DP-4 --mode 1920x1080 --pos 0x0 --rotate left 
 exec_always --no-startup-id ff-theme-util
 exec_always --no-startup-id fix_xcursor
 exec_always compton --config .config/compton/compton.conf
