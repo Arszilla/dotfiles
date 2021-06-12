@@ -30,8 +30,8 @@ Host gitlab.com
 	IdentityFile ~/.ssh/gitlab
 	IdentitiesOnly yes
 
-Host kimsufi
-	Hostname arslanmasood.com
+Host nextcloud
+	Hostname cloud.arslanmasood.com
 	User arszilla
 	IdentityFile ~/.ssh/kimsufi
 
