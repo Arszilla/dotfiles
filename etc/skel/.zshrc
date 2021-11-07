@@ -2,7 +2,7 @@ export ZSH="/home/arszilla/.oh-my-zsh"
 
 ZSH_THEME="clean"
 
-# Plugins 
+# Plugins
 plugins=(git zsh-autosuggestions zsh-completions)
 autoload -U compinit && compinit
 
