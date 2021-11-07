@@ -30,11 +30,6 @@ Host gitlab.com
 	IdentityFile ~/.ssh/gitlab
 	IdentitiesOnly yes
 
-Host nextcloud
-	Hostname cloud.arslanmasood.com
-	User arszilla
-	IdentityFile ~/.ssh/kimsufi
-
 Host *
 #   ForwardAgent no
 #   ForwardX11 no
