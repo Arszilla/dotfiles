@@ -37,6 +37,9 @@ do
     fi
 done
 
+# Dependencies
+/usr/bin/sudo apt install xsel xclip -y
+
 # oh-my-zsh related actions:
 /usr/bin/sudo -H -u $SUDO_USER sh -c "$(/usr/bin/curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
 
