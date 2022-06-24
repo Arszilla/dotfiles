@@ -1,12 +1,11 @@
-# Dotfiles
+# dotfiles
 These are my custom dotfiles for [Kali i3-gaps][Kali i3-gaps].
 
-In order to easily deploy the files in this repo, use `deploy.sh`:
+To deploy the files in this repo, run `deploy.sh`:
 
 ```
-$ sudo bash deploy.sh
+$ chmod +x deploy.sh
+$ ./deploy.sh
 ```
-
-Prior to executing the script, make sure to place your SSH keys to `./etc/skel/.ssh`.
 
 [Kali i3-gaps]: https://gitlab.com/Arszilla/kali-i3_gaps
