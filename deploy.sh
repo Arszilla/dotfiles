@@ -1,82 +1,104 @@
 #!/bin/bash
 
-if [ "$EUID" -ne 0 ]
-then
-    echo "The script needs root permissions to run. Please ensure that you're running the script with 'sudo'."
-    exit
-fi
+help_menu() {
+    echo "Usage: $0 [-d/-l] [-h]" >&2
+}
 
-while :
-do
-    echo "Specify your device:"
-    echo "1) Laptop"
-    echo "2) Desktop"
-    
-    read -p "Enter a number between 1 and 2: " DEVICE
-    
-    if [[ "$DEVICE" -eq 1 || "$DEVICE" -eq 2 ]]
-    then
-        if [ "$DEVICE" -eq 1 ]
-        then
-            # Move the laptop specific files to /home/$SUDO_USER/:
-            /usr/bin/cp -r ./"Laptop Specific"/etc/skel/. /home/$SUDO_USER/
-            
-        elif [ "$DEVICE" -eq 2 ]
-        then
-            # Move the laptop specific files to /home/$SUDO_USER/:
-            /usr/bin/cp -r ./"Desktop Specific"/etc/skel/. /home/$SUDO_USER/
-            
-        fi
+user_dirs() {
+    # Make sure user-dirs are created for $USER:
+    /usr/bin/xdg-user-dirs-update
 
-        break
-        
-    else
-        echo "Please input either 1 or 2 as an input."
-        echo
-    
+    # Make sure user-dirs are created for root:
+    /usr/bin/sudo /usr/bin/xdg-user-dirs-update
+}
+
+desktop() {
+    # Copy desktop specific dotfiles to $USER's home directory:
+    /usr/bin/cp -r "$1"/Desktop/etc/skel/. "$HOME"/
+    /usr/bin/cp -r "$1"/etc/skel/Pictures/ "$HOME"/
+
+    # Copy desktop specific dotfiles to root's home directory:
+    /usr/bin/sudo /usr/bin/cp -r "$1"/Desktop/etc/skel/. /root/
+    /usr/bin/sudo /usr/bin/cp -r "$1"/etc/skel/Pictures/ /root/
+}
+
+laptop() {
+    # Copy desktop specific dotfiles to $USER's home directory:
+    /usr/bin/cp -r "$1"/Laptop/etc/skel/. "$HOME"/
+    /usr/bin/mkdir -p "$HOME"/Pictures/Wallpapers && /usr/bin/cp "$1"/etc/skel/Pictures/Wallpapers/vertical.png "$_"
+
+    # Copy desktop specific dotfiles to root's home directory:
+    /usr/bin/sudo /usr/bin/cp -r "$1"/Laptop/etc/skel/. /root/
+    /usr/bin/sudo /usr/bin/mkdir -p /root/Pictures/Wallpapers && /usr/bin/sudo /usr/bin/cp "$1"/etc/skel/Pictures/Wallpapers/vertical.png "$_"
+}
+
+ohmyzsh() {
+    # Install ohmyzsh for $USER:
+    /usr/bin/sh -c "$(/usr/bin/curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
+
+    # Install zsh-autosuggestions for $USER:
+    /usr/bin/git clone https://github.com/zsh-users/zsh-autosuggestions "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}"/plugins/zsh-autosuggestions
+
+    # Install zsh-completions for $USER:
+    /usr/bin/git clone https://github.com/zsh-users/zsh-completions "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}"/plugins/zsh-completions
+
+    # Install ohmyzsh for root:
+    /usr/bin/sudo /usr/bin/sh -c "$(/usr/bin/curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
+
+    # Install zsh-autosuggestions for root:
+    /usr/bin/sudo /usr/bin/git clone https://github.com/zsh-users/zsh-autosuggestions "${ZSH_CUSTOM:-/root/.oh-my-zsh/custom}"/plugins/zsh-autosuggestions
+
+    # Install zsh-completions for root:
+    /usr/bin/sudo /usr/bin/git clone https://github.com/zsh-users/zsh-completions "${ZSH_CUSTOM:-/root/.oh-my-zsh/custom}"/plugins/zsh-completions
+}
+
+general() {
+    # Copy general dotfiles (excluding .mozilla/) to $USER's home directory:
+    /usr/bin/rsync -az --exclude .mozilla --exclude Pictures/ "$1"/etc/skel/ "$HOME"/
+
+    # Copy `userChrome.css` needed for Tree Style Tab plugin:
+    /usr/bin/cp -r "$1"/etc/skel/.mozilla/. "$HOME"/.mozilla/firefox/*.default-esr/
+
+    # Copy general dotfiles (excluding .mozilla/) to root's home directory:
+    /usr/bin/sudo /usr/bin/rsync -az --exclude .mozilla --exclude Pictures/ "$1"/etc/skel/ /root/
+
+    # Copy ssh_config to /etc/ssh/:
+    /usr/bin/sudo /usr/bin/cp "$1"/etc/ssh/ssh_config /etc/ssh/
+}
+
+main() {
+    # We're going to need root rights at some point:
+    if [ "$(whoami)" != "root" ]; then
+        /usr/bin/sudo -v
     fi
-done
 
-# Dependencies
-/usr/bin/sudo apt install xsel xclip -y
-
-# oh-my-zsh related actions:
-/usr/bin/sudo -H -u $SUDO_USER sh -c "$(/usr/bin/curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
-
-# oh-my-zsh autosuggestions plugin installation:
-/usr/bin/sudo -H -u $SUDO_USER /usr/bin/git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-/home/$SUDO_USER/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
-
-# oh-my-zsh completions plugin installation:
-/usr/bin/sudo -H -u $SUDO_USER /usr/bin/git clone https://github.com/zsh-users/zsh-completions ${ZSH_CUSTOM:-/home/$SUDO_USER/.oh-my-zsh/custom}/plugins/zsh-completions
-
-# Add the dotfiles to the /home/$SUDO_USER/:
-/usr/bin/cp -r ./etc/skel/. /home/$SUDO_USER/
-
-# Replace SSH's config at /etc/ssh/:
-/usr/bin/cp -r ./etc/ssh/ssh_config /etc/ssh/
-
-# Set the permissions for the SSH private and public keys:
-for FILE in /home/$SUDO_USER/.ssh/*
-do
-
-    # Check if $FILE is README.md:
-    if [ "$FILE" == "README.md" ]
-    then
-        /usr/bin/rm $FILE
-    
-    # Check if $FILE is known_hosts:
-    elif [ "$FILE" == "known_hosts" ]
-    then
-        continue
-
-    # Check if $FILE is a public key:
-    elif [ "${FILE: -4}" == ".pub" ]
-    then
-        /usr/bin/chmod 644 $FILE
-
-    # If $FILE is a private key:
-    else
-        /usr/bin/chmod 600 $FILE
-
+    # Check if any flags are given, if not display the help menu
+    if (($# != 1)); then
+        help_menu
+        exit 1
     fi
-done
+
+    # Get CWD i.e. where the script is located:
+    script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")/" && pwd)"
+
+    while getopts ":dlh" option; do
+        case $option in
+        d) # Desktop
+            user_dirs
+            desktop "$script_dir"
+            general "$script_dir"
+            ;;
+        l) # Laptop
+            user_dirs
+            laptop "$script_dir"
+            general "$script_dir"
+            ;;
+        h | \? | *) # Display help
+            help_menu
+            exit 1
+            ;;
+        esac
+    done
+}
+
+main "$@"
