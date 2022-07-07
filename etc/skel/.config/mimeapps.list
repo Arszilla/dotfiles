@@ -1,0 +1,10 @@
+[Default Applications]
+application/pdf=org.pwmt.zatura-pdf-poppler.desktop
+image/png=sxiv.desktop
+text/html=firefox-esr.desktop
+inode/directory=pcmanfm.desktop
+text/plain=code.desktop
+x-scheme-handler/about=firefox-esr.desktop
+x-scheme-handler/http=firefox-esr.desktop
+x-scheme-handler/https=firefox-esr.desktop
+x-scheme-handler/unknown=firefox-esr.desktop
