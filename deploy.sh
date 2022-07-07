@@ -20,6 +20,11 @@ desktop() {
     # Copy desktop specific dotfiles to root's home directory:
     /usr/bin/sudo /usr/bin/cp -r "$1"/Desktop/etc/skel/. /root/
     /usr/bin/sudo /usr/bin/cp -r "$1"/etc/skel/Pictures/ /root/
+
+    # Replace mentions of $HOME in nitrogen dotfiles to root:
+    /usr/bin/sudo /usr/bin/sed -i "s|$HOME|\/root|g" /root/.config/nitrogen/bg-saved.cfg
+    /usr/bin/sudo /usr/bin/sed -i "s|$HOME|\/root|g" /root/.config/nitrogen/nitrogen.cfg
+
 }
 
 laptop() {
@@ -30,6 +35,10 @@ laptop() {
     # Copy desktop specific dotfiles to root's home directory:
     /usr/bin/sudo /usr/bin/cp -r "$1"/Laptop/etc/skel/. /root/
     /usr/bin/sudo /usr/bin/mkdir -p /root/Pictures/Wallpapers && /usr/bin/sudo /usr/bin/cp "$1"/etc/skel/Pictures/Wallpapers/vertical.png "$_"
+
+    # Replace mentions of $HOME in nitrogen dotfiles to root:
+    /usr/bin/sudo /usr/bin/sed -i "s|$HOME|\/root|g" /root/.config/nitrogen/bg-saved.cfg
+    /usr/bin/sudo /usr/bin/sed -i "s|$HOME|\/root|g" /root/.config/nitrogen/nitrogen.cfg
 }
 
 ohmyzsh() {
@@ -62,6 +71,9 @@ general() {
     # Copy general dotfiles (excluding .mozilla/) to root's home directory:
     /usr/bin/sudo /usr/bin/rsync -az --exclude .mozilla --exclude Pictures/ "$1"/etc/skel/ /root/
 
+    # Update .zshrc's ZSH variable from $USER to root:
+    /usr/bin/sudo /usr/bin/sed -i "s|$HOME|\/root|g" /root/.zshrc
+
     # Copy ssh_config to /etc/ssh/:
     /usr/bin/sudo /usr/bin/cp "$1"/etc/ssh/ssh_config /etc/ssh/
 }
@@ -86,11 +98,13 @@ main() {
         d) # Desktop
             user_dirs
             desktop "$script_dir"
+            ohmyzsh
             general "$script_dir"
             ;;
         l) # Laptop
             user_dirs
             laptop "$script_dir"
+            ohmyzsh
             general "$script_dir"
             ;;
         h | \? | *) # Display help
