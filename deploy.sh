@@ -30,7 +30,7 @@ desktop() {
 laptop() {
     # Copy desktop specific dotfiles to $USER's home directory:
     /usr/bin/cp -r "$1"/Laptop/etc/skel/. "$HOME"/
-    /usr/bin/mkdir -p "$HOME"/Pictures/Wallpapers && /usr/bin/cp "$1"/etc/skel/Pictures/Wallpapers/vertical.png "$_"
+    /usr/bin/mkdir -p "$HOME"/Pictures/Wallpapers && /usr/bin/cp "$1"/etc/skel/Pictures/Wallpapers/horizontal.png "$_"
 
     # Copy desktop specific dotfiles to root's home directory:
     /usr/bin/sudo /usr/bin/cp -r "$1"/Laptop/etc/skel/. /root/
