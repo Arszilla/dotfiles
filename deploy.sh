@@ -42,6 +42,31 @@ general() {
     /usr/bin/sudo /usr/bin/sed -i "s|\$HOME|\/root|g" /root/.zshrc
 }
 
+yubikey() {
+    /usr/bin/pamu2fcfgpamu2fcfg | /usr/bin/sudo /usr/bin/tee -a /etc/u2f_mappings
+
+    /usr/bin/sudo /usr/bin/echo >>/etc/u2f_mappings
+
+    /usr/bin/echo 'auth sufficient pam_u2f.so authfile=/etc/u2f_mappings cue' >/etc/pam.d/common-u2f
+
+    for file in $(/usr/bin/sudo /usr/bin/grep -l "@include common-auth" /etc/pam.d/*); do
+        if [[ $file == *~ ]]; then
+            continue
+        fi
+
+        if /usr/bin/sudo /usr/bin/grep -q "@include common-u2f" $file; then
+            continue
+        fi
+
+        /usr/bin/sudo /usr/bin/mv $file $file~
+
+        /usr/bin/sudo /usr/bin/awk '/@include common-auth/ {print "@include common-u2f"}; {print}' $file~ >$file
+    done
+
+    exit
+}
+
 user_dirs
 ohmyzsh
 general
+yubikey
