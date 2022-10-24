@@ -45,9 +45,9 @@ general() {
 yubikey() {
     /usr/bin/pamu2fcfgpamu2fcfg | /usr/bin/sudo /usr/bin/tee -a /etc/u2f_mappings
 
-    /usr/bin/sudo /usr/bin/echo >>/etc/u2f_mappings
+    /usr/bin/sudo /usr/bin/echo >>/usr/bin/sudo /etc/u2f_mappings
 
-    /usr/bin/echo 'auth sufficient pam_u2f.so authfile=/etc/u2f_mappings cue' >/etc/pam.d/common-u2f
+    /usr/bin/sudo /usr/bin/echo 'auth sufficient pam_u2f.so authfile=/etc/u2f_mappings cue' >/etc/pam.d/common-u2f
 
     for file in $(/usr/bin/sudo /usr/bin/grep -l "@include common-auth" /etc/pam.d/*); do
         if [[ $file == *~ ]]; then
