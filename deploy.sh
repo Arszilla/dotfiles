@@ -52,15 +52,18 @@ yubikey() {
     for file in $(/usr/bin/sudo /usr/bin/grep -l "@include common-auth" /etc/pam.d/*); do
         if [[ $file == *~ ]]; then
             continue
+        
         fi
 
         if /usr/bin/sudo /usr/bin/grep -q "@include common-u2f" $file; then
             continue
+        
         fi
 
         /usr/bin/sudo /usr/bin/mv $file $file~
 
         /usr/bin/sudo /usr/bin/awk '/@include common-auth/ {print "@include common-u2f"}; {print}' $file~ >$file
+    
     done
 
     exit
