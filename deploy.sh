@@ -41,7 +41,7 @@ general() {
 }
 
 yubikey() {
-    /usr/bin/pamu2fcfgpamu2fcfg | /usr/bin/sudo /usr/bin/tee -a /etc/u2f_mappings
+    /usr/bin/pamu2fcfg | /usr/bin/sudo /usr/bin/tee -a /etc/u2f_mappings
 
     /usr/bin/sudo /usr/bin/echo /etc/u2f_mappings >>/usr/bin/sudo
 
